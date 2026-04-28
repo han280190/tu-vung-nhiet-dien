@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fafaf7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Từ vựng NĐ">
+<title>Từ vựng Nhiệt điện · 热电词典</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #fafaf7;
+    --bg-elev: #ffffff;
+    --bg-card: #ffffff;
+    --border: #e5e2da;
+    --border-soft: #ece9e1;
+    --text: #1a1a1a;
+    --text-dim: #6b6b6b;
+    --text-faint: #9a9a9a;
+    --accent: #c2410c;
+    --accent-soft: #c2410c14;
+    --accent-glow: #fed7aa;
+    --vn: #15803d;
+    --vn-bg: #dcfce7;
+    --zh: #b45309;
+    --zh-bg: #fef3c7;
+    --py: #92400e;
+    --en: #1d4ed8;
+    --en-bg: #dbeafe;
+    --danger: #b91c1c;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-image:
+      radial-gradient(circle at 20% 0%, #c2410c08 0%, transparent 40%),
+      radial-gradient(circle at 80% 100%, #1d4ed808 0%, transparent 40%);
+  }
+
+  header {
+    padding: calc(var(--safe-top) + 14px) 18px 12px;
+    background: linear-gradient(180deg, var(--bg) 0%, #fafaf7ee 60%, #fafaf700 100%);
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    border: 1.5px solid var(--accent);
+    background: var(--accent-soft);
+    display: grid; place-items: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 16px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .brand-text { line-height: 1.1; }
+  .brand-cn {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  .brand-vi {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .brand-status {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--vn);
+    box-shadow: 0 0 6px #15803d80;
+  }
+  .status-dot.loading { background: var(--accent); box-shadow: 0 0 6px #c2410c80; animation: pulse 1.2s infinite; }
+  .status-dot.error { background: var(--danger); box-shadow: 0 0 6px #b91c1c80; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .search-wrap { position: relative; }
+  .search-input {
+    width: 100%;
+    background: var(--bg-elev);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 16px;
+    padding: 14px 44px 14px 44px;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .search-input::placeholder { color: var(--text-faint); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .search-clear {
+    position: absolute; right: 8px; top: 50%;
+    transform: translateY(-50%);
+    width: 30px; height: 30px;
+    border: none; background: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    border-radius: 6px;
+  }
+  .search-clear.visible { display: flex; }
+  .search-clear:active { background: var(--border); }
+
+  .meta-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+  .count-badge { color: var(--accent); font-weight: 700; }
+  .refresh-btn {
+    background: none; border: none;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .refresh-btn:active { background: var(--border); color: var(--accent); }
+  .refresh-btn svg { transition: transform 0.6s; }
+  .refresh-btn.spinning svg { transform: rotate(360deg); }
+
+  main {
+    flex: 1;
+    padding: 8px 12px calc(var(--safe-bottom) + 24px);
+    overflow-y: auto;
+  }
+
+  .results { display: flex; flex-direction: column; gap: 8px; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+
+  .card-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    line-height: 1.4;
+  }
+  .card-row + .card-row { margin-top: 6px; }
+
+  .lang-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    text-transform: uppercase;
+    min-width: 32px;
+    text-align: center;
+  }
+  .lang-tag.zh { color: var(--zh); background: var(--zh-bg); border: 1px solid #fde68a; }
+  .lang-tag.py { color: var(--py); background: transparent; border: 1px dashed #d6d3d1; }
+  .lang-tag.vi { color: var(--vn); background: var(--vn-bg); border: 1px solid #bbf7d0; }
+  .lang-tag.en { color: var(--en); background: var(--en-bg); border: 1px solid #bfdbfe; }
+
+  .card-zh {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    word-break: break-word;
+    flex: 1;
+  }
+  .card-pinyin {
+    font-family: 'Noto Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--py);
+    line-height: 1.3;
+    flex: 1;
+    padding-top: 2px;
+  }
+  .card-vi { color: var(--text); flex: 1; font-size: 14px; padding-top: 3px; }
+  .card-en { color: var(--text-dim); font-style: italic; flex: 1; font-size: 14px; padding-top: 3px; }
+
+  mark {
+    background: var(--accent-glow);
+    color: var(--accent);
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+
+  .state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-dim);
+  }
+  .state-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+  }
+  .state-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .state-msg {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .state-msg code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--accent-soft);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .retry-btn {
+    margin-top: 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .retry-btn:active { transform: scale(0.97); }
+
+  .quick-row {
+    display: flex; gap: 6px; overflow-x: auto;
+    padding: 4px 0 12px;
+    scrollbar-width: none;
+  }
+  .quick-row::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip:active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .install-hint {
+    position: fixed; bottom: calc(var(--safe-bottom) + 12px);
+    left: 12px; right: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: none;
+    z-index: 100;
+  }
+  .install-hint.show { display: flex; align-items: center; gap: 8px; }
+  .install-hint button {
+    margin-left: auto;
+    background: none; border: none;
+    color: var(--text-faint);
+    font-size: 18px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">热</div>
+    <div class="brand-text">
+      <div class="brand-cn">热电词典</div>
+      <div class="brand-vi">Từ vựng Nhiệt điện</div>
+    </div>
+    <div class="brand-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">SẴN SÀNG</span>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="7"/>
+      <path d="m21 21-4.3-4.3"/>
+    </svg>
+    <input
+      id="searchInput"
+      class="search-input"
+      type="search"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      placeholder="Việt / 中文 / English / pinyin (chuyangqi)..."
+    />
+    <button class="search-clear" id="searchClear" aria-label="Xóa">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="meta-row">
+    <span><span class="count-badge" id="resultCount">—</span> / <span id="totalCount">—</span> TỪ</span>
+    <button class="refresh-btn" id="refreshBtn" title="Cập nhật từ Google Sheet">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+      </svg>
+      <span>SYNC</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="quick-row" id="quickRow"></div>
+  <div class="results" id="results"></div>
+</main>
+
+<div class="install-hint" id="installHint">
+  <span>💡 Thêm vào Màn hình chính: Share → "Thêm vào Home Screen"</span>
+  <button id="dismissHint">×</button>
+</div>
+
+<script>
+const SHEET_ID = '1B-mR-IW3uWA3tgm8aWx-T4NzrNd8snZRKBBAdsSIPJs';
+const SHEET_NAME = 'Vocabulary';
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+const CACHE_KEY = 'vocab_cache_v2';
+const CACHE_TIME_KEY = 'vocab_cache_time_v2';
+
+const QUICK_TERMS = ['lò hơi', 'tuabin', 'máy phát', 'bơm', 'van', 'quạt', 'amoniac', 'cáp', 'xúc tác'];
+
+let allRows = [];
+
+const $ = id => document.getElementById(id);
+const searchInput = $('searchInput');
+const searchClear = $('searchClear');
+const resultsEl = $('results');
+const resultCount = $('resultCount');
+const totalCount = $('totalCount');
+const statusDot = $('statusDot');
+const statusText = $('statusText');
+const refreshBtn = $('refreshBtn');
+const quickRow = $('quickRow');
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], n = text[i+1];
+    if (inQuotes) {
+      if (c === '"' && n === '"') { field += '"'; i++; }
+      else if (c === '"') { inQuotes = false; }
+      else { field += c; }
+    } else {
+      if (c === '"') { inQuotes = true; }
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && n === '\n') i++;
+        row.push(field); field = '';
+        if (row.some(f => f.trim() !== '')) rows.push(row);
+        row = [];
+      } else { field += c; }
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); if (row.some(f => f.trim() !== '')) rows.push(row); }
+  return rows;
+}
+
+// Bỏ dấu thanh (cho cả tiếng Việt VÀ pinyin tiếng Trung)
+function normalize(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+    .trim();
+}
+
+// Pinyin search: bỏ dấu thanh + bỏ khoảng trắng để match "chuyangqi" với "chú yǎng qì"
+function normalizePinyin(s) {
+  return normalize(s).replace(/\s+/g, '');
+}
+
+function setStatus(state, text) {
+  statusDot.className = 'status-dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
+  statusText.textContent = text;
+}
+
+async function loadData(forceFresh = false) {
+  setStatus('loading', 'ĐANG TẢI...');
+
+  if (!forceFresh) {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      try {
+        allRows = JSON.parse(cached);
+        renderInitial();
+        const cacheTime = localStorage.getItem(CACHE_TIME_KEY);
+        const ago = cacheTime ? formatAgo(Date.now() - parseInt(cacheTime)) : '';
+        setStatus('ok', `OFFLINE · ${ago}`);
+      } catch(e) {}
+    }
+  }
+
+  try {
+    const res = await fetch(SHEET_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const csv = await res.text();
+    const rows = parseCSV(csv);
+
+    const data = [];
+    for (const r of rows) {
+      const zh = (r[0] || '').trim();
+      const vi = (r[1] || '').trim();
+      const en = (r[2] || '').trim();
+      const pinyin = (r[3] || '').trim();
+      if (!zh) continue;
+      if (zh === 'Tiếng Trung' || zh.includes('Tiếng Trung')) continue;
+      data.push({ zh, vi, en, pinyin });
+    }
+
+    allRows = data;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+    renderInitial();
+    setStatus('ok', 'ĐÃ ĐỒNG BỘ');
+  } catch (err) {
+    console.error(err);
+    if (allRows.length === 0) {
+      showError(err);
+    } else {
+      setStatus('error', 'OFFLINE');
+    }
+  }
+}
+
+function formatAgo(ms) {
+  const min = Math.floor(ms / 60000);
+  if (min < 1) return 'VỪA XONG';
+  if (min < 60) return min + ' PHÚT TRƯỚC';
+  const h = Math.floor(min / 60);
+  if (h < 24) return h + ' GIỜ TRƯỚC';
+  return Math.floor(h / 24) + ' NGÀY TRƯỚC';
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Highlight thông thường: bỏ dấu nhưng giữ space
+function highlight(text, query) {
+  if (!query || !text) return escapeHtml(text);
+  const normText = normalize(text);
+  const normQuery = normalize(query);
+  if (!normQuery) return escapeHtml(text);
+
+  const idx = normText.indexOf(normQuery);
+  if (idx >= 0) {
+    return escapeHtml(text.slice(0, idx)) +
+           '<mark>' + escapeHtml(text.slice(idx, idx + normQuery.length)) + '</mark>' +
+           escapeHtml(text.slice(idx + normQuery.length));
+  }
+
+  // Direct case-insensitive (cho ZH characters)
+  const lowText = text.toLowerCase();
+  const lowQuery = query.toLowerCase();
+  const directIdx = lowText.indexOf(lowQuery);
+  if (directIdx >= 0) {
+    return escapeHtml(text.slice(0, directIdx)) +
+           '<mark>' + escapeHtml(text.slice(directIdx, directIdx + query.length)) + '</mark>' +
+           escapeHtml(text.slice(directIdx + query.length));
+  }
+  return escapeHtml(text);
+}
+
+// Highlight cho pinyin: phải xử lý cả khi user gõ "chuyangqi" mà text là "chú yǎng qì"
+// Approach: tạo mapping từ vị trí trong normalizedNoSpace -> vị trí gốc, rồi tìm match
+function highlightPinyin(text, query) {
+  if (!query || !text) return escapeHtml(text);
+  const normQueryNoSpace = normalizePinyin(query);
+  if (!normQueryNoSpace) return escapeHtml(text);
+
+  // Build normalized-no-space version + index map
+  let normNoSpace = '';
+  const indexMap = []; // indexMap[i] = vị trí gốc trong text của ký tự thứ i trong normNoSpace
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const normCh = normalize(ch).replace(/\s+/g, '');
+    if (normCh) {
+      for (let j = 0; j < normCh.length; j++) {
+        indexMap.push(i);
+      }
+      normNoSpace += normCh;
+    }
+  }
+
+  const matchIdx = normNoSpace.indexOf(normQueryNoSpace);
+  if (matchIdx === -1) return highlight(text, query); // fallback
+
+  const startOrig = indexMap[matchIdx];
+  const endOrig = indexMap[matchIdx + normQueryNoSpace.length - 1] + 1;
+
+  return escapeHtml(text.slice(0, startOrig)) +
+         '<mark>' + escapeHtml(text.slice(startOrig, endOrig)) + '</mark>' +
+         escapeHtml(text.slice(endOrig));
+}
+
+function renderCard(row, query) {
+  const zhHtml = highlight(row.zh, query);
+  const pyHtml = row.pinyin ? highlightPinyin(row.pinyin, query) : '';
+  const viHtml = row.vi ? highlight(row.vi, query) : '';
+  const enHtml = row.en ? highlight(row.en, query) : '';
+
+  return `
+    <div class="card">
+      <div class="card-row"><span class="lang-tag zh">中</span><div class="card-zh">${zhHtml}</div></div>
+      ${pyHtml ? `<div class="card-row"><span class="lang-tag py">PY</span><div class="card-pinyin">${pyHtml}</div></div>` : ''}
+      ${viHtml ? `<div class="card-row"><span class="lang-tag vi">VI</span><div class="card-vi">${viHtml}</div></div>` : ''}
+      ${enHtml ? `<div class="card-row"><span class="lang-tag en">EN</span><div class="card-en">${enHtml}</div></div>` : ''}
+    </div>
+  `;
+}
+
+function renderResults(rows, query) {
+  resultCount.textContent = rows.length.toLocaleString('vi-VN');
+
+  if (rows.length === 0) {
+    resultsEl.innerHTML = `
+      <div class="state">
+        <div class="state-icon">∅</div>
+        <div class="state-title">Không tìm thấy</div>
+        <div class="state-msg">Thử từ khóa khác — Việt không dấu, pinyin không dấu / không khoảng cách đều OK</div>
+      </div>`;
+    return;
+  }
+
+  const RENDER_LIMIT = 100;
+  const toRender = rows.slice(0, RENDER_LIMIT);
+  let html = toRender.map(r => renderCard(r, query)).join('');
+
+  if (rows.length > RENDER_LIMIT) {
+    html += `<div class="state" style="padding:24px"><div class="state-msg">+${rows.length - RENDER_LIMIT} kết quả khác — gõ thêm để lọc</div></div>`;
+  }
+
+  resultsEl.innerHTML = html;
+}
+
+function renderInitial() {
+  totalCount.textContent = allRows.length.toLocaleString('vi-VN');
+  const q = searchInput.value.trim();
+  if (q) doSearch(q);
+  else renderResults(allRows, '');
+}
+
+function showError(err) {
+  setStatus('error', 'LỖI');
+  resultsEl.innerHTML = `
+    <div class="state">
+      <div class="state-icon">!</div>
+      <div class="state-title">Không tải được dữ liệu</div>
+      <div class="state-msg">
+        Hãy chắc chắn Google Sheet đang để chế độ <code>Anyone with the link</code>.<br><br>
+        File → Share → General access → <strong>Anyone with the link</strong> → <strong>Viewer</strong>
+      </div>
+      <button class="retry-btn" onclick="loadData(true)">THỬ LẠI</button>
+    </div>`;
+}
+
+function doSearch(query) {
+  const q = query.trim();
+  if (!q) {
+    renderResults(allRows, '');
+    return;
+  }
+  const isChinese = /[\u4e00-\u9fa5]/.test(q);
+  const nq = normalize(q);                      // bỏ dấu, giữ space
+  const nqNoSpace = nq.replace(/\s+/g, '');     // bỏ luôn space cho pinyin
+
+  const matched = [];
+  for (const row of allRows) {
+    let score = 0;
+
+    if (isChinese) {
+      // Search trong tiếng Trung
+      if (row.zh === q) score = 1000;
+      else if (row.zh.startsWith(q)) score = 500;
+      else if (row.zh.includes(q)) score = 100;
+    } else {
+      const nVi = normalize(row.vi);
+      const nEn = normalize(row.en);
+      const nPyNoSpace = normalizePinyin(row.pinyin);
+
+      // Exact match VI/EN
+      if (nVi === nq || nEn === nq) score = 1000;
+      // Pinyin exact (no space): "chuyangqi" === "chuyangqi"
+      else if (nPyNoSpace && nPyNoSpace === nqNoSpace) score = 950;
+      // Starts with VI/EN
+      else if (nVi.startsWith(nq) || nEn.startsWith(nq)) score = 500;
+      // Pinyin starts with: "chuyang" -> "chuyangqi"
+      else if (nPyNoSpace && nPyNoSpace.startsWith(nqNoSpace)) score = 450;
+      // Contains VI/EN
+      else if (nVi.includes(nq) || nEn.includes(nq)) score = 200;
+      // Pinyin contains
+      else if (nPyNoSpace && nPyNoSpace.includes(nqNoSpace)) score = 150;
+    }
+
+    if (score > 0) matched.push({ row, score });
+  }
+
+  matched.sort((a, b) => b.score - a.score);
+  renderResults(matched.map(m => m.row), q);
+}
+
+let searchTimer;
+searchInput.addEventListener('input', e => {
+  const v = e.target.value;
+  searchClear.classList.toggle('visible', v.length > 0);
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => doSearch(v), 80);
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchClear.classList.remove('visible');
+  doSearch('');
+  searchInput.focus();
+});
+
+function renderQuickChips() {
+  quickRow.innerHTML = QUICK_TERMS.map(t =>
+    `<button class="chip" data-term="${escapeHtml(t)}">${escapeHtml(t)}</button>`
+  ).join('');
+  quickRow.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      searchInput.value = btn.dataset.term;
+      searchClear.classList.add('visible');
+      doSearch(btn.dataset.term);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+refreshBtn.addEventListener('click', () => {
+  refreshBtn.classList.add('spinning');
+  loadData(true).finally(() => {
+    setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
+  });
+});
+
+const installHint = $('installHint');
+const dismissHint = $('dismissHint');
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+if (isIOS && !isStandalone && !localStorage.getItem('hint_dismissed')) {
+  setTimeout(() => installHint.classList.add('show'), 3000);
+}
+dismissHint.addEventListener('click', () => {
+  installHint.classList.remove('show');
+  localStorage.setItem('hint_dismissed', '1');
+});
+
+renderQuickChips();
+loadData(false);
+</script>
+</body>
+</html>
